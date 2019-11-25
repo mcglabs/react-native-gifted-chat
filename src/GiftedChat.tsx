@@ -14,6 +14,7 @@ import {
 } from 'react-native'
 
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
+// import * as ActionSheetProvider from 'react-native-action-sheet'
 import moment from 'moment'
 import uuid from 'uuid'
 import { isIphoneX } from 'react-native-iphone-x-helper'
@@ -369,6 +370,12 @@ class GiftedChat<TMessage extends IMessage = IMessage> extends React.Component<
     typingDisabled: false,
     text: undefined,
     messages: undefined,
+
+    // Timeline
+    // data: this.props.data,
+    // dataSource: ds.cloneWithRows(this.props.data),
+    x: 0,
+    width: 0,
   }
 
   constructor(props: GiftedChatProps<TMessage>) {
