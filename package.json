@@ -113,7 +113,6 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint && yarn tsc"
     }
   }
 }

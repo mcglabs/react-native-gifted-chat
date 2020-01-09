@@ -32,6 +32,7 @@ import InputToolbar from './InputToolbar'
 import LoadEarlier from './LoadEarlier'
 import Message from './Message'
 import MessageContainer from './MessageContainer'
+import Timeline from './Timeline'
 import Send from './Send'
 import Time from './Time'
 import GiftedAvatar from './GiftedAvatar'
@@ -51,6 +52,8 @@ import QuickReplies from './QuickReplies'
 export interface GiftedChatProps<TMessage extends IMessage = IMessage> {
   /* Messages to display */
   messages?: TMessage[]
+  /* Format this in timeline view */
+  isTimeline?: boolean
   /* Input text; default is undefined, but if specified, it will override GiftedChat's internal state */
   text?: string
   /* Controls whether or not the message bubbles appear at the top of the chat */
@@ -205,6 +208,7 @@ class GiftedChat<TMessage extends IMessage = IMessage> extends React.Component<
 
   static defaultProps = {
     messages: [],
+    isTimeline: false,
     text: undefined,
     placeholder: DEFAULT_PLACEHOLDER,
     messageIdGenerator: () => uuid.v4(),
@@ -267,6 +271,7 @@ class GiftedChat<TMessage extends IMessage = IMessage> extends React.Component<
 
   static propTypes = {
     messages: PropTypes.arrayOf(PropTypes.object),
+    isTimeline: PropTypes.bool,
     text: PropTypes.string,
     initialText: PropTypes.string,
     placeholder: PropTypes.string,
@@ -646,6 +651,30 @@ class GiftedChat<TMessage extends IMessage = IMessage> extends React.Component<
     )
   }
 
+  renderTimeline() {
+    const fragment = (
+      <View
+        style={{
+          height: this.state.messagesContainerHeight,
+        }}
+      >
+        <Timeline
+          {...this.props}
+          invertibleScrollViewProps={this.invertibleScrollViewProps}
+          messages={this.getMessages()}
+          forwardRef={this._messageContainerRef}
+        />
+        {this.renderChatFooter()}
+      </View>
+    )
+
+    return this.props.isKeyboardInternallyHandled ? (
+      <KeyboardAvoidingView enabled>{fragment}</KeyboardAvoidingView>
+    ) : (
+      fragment
+    )
+  }
+
   onSend = (messages: TMessage[] = [], shouldResetInputToolbar = false) => {
     if (!Array.isArray(messages)) {
       messages = [messages]
@@ -813,7 +842,9 @@ class GiftedChat<TMessage extends IMessage = IMessage> extends React.Component<
             ref={(component: any) => (this._actionSheetRef = component)}
           >
             <View style={styles.container} onLayout={this.onMainViewLayout}>
-              {this.renderMessages()}
+              {!this.props.isTimeline
+                ? this.renderMessages()
+                : this.renderTimeline()}
               {this.renderInputToolbar()}
             </View>
           </ActionSheetProvider>
